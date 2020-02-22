@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+
+</head>
+<body>
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<table>
+    <tr>
+        <th>ID</th>
+        <td><input id="userId"></td>
+    </tr>
+    <tr>
+        <th>用户名</th>
+        <td><input id="userName"></td>
+    </tr>
+    <tr>
+        <th>年龄</th>
+        <td><input id="age"></td>
+    </tr>
+
+</table>
+
+
+<input type="button" id="addUser" value="添加用户">
+<input type="button" id="deleteUser" value="删除用户">
+<input type="button" id="updateUser" value="修改用户">
+<input type="button" id="queryUser" value="查询用户">
+
+<div id="showArea"></div>
+
+<script>
+
+    $("#addUser").click(function () {
+        var data = "{'name': '" + $("#userName").val() + "','age':" + $("#age").val() + ",'id':'" + $("#userId").val() + "'}";
+
+        $.ajax({
+            url: "/addUser",
+            data: data,
+            type: "POST",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            success: function (data) {
+                // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                alert("添加成功")
+            }
+        })
+    });
+
+    $("#deleteUser").click(function () {
+        if ($("#userId").val() == null || $("#userId").val() == ''){
+            alert("用户ID不可为空");
+            return ;
+        }
+        var data = "{'id':'" + $("#userId").val() + "'}";
+        $.ajax({
+            url: "/deleteUser",
+            data: data,
+            type: "POST",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            success: function (data) {
+                // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                alert("删除成功")
+            }
+        })
+    });
+
+    $("#updateUser").click(function () {
+        var userId = $("#userId").val();
+        var data = "{'name': '" + $("#userName").val() + "','age':" + $("#age").val() + ",'id':'" + $("#userId").val() + "'}";
+        if (userId == null || userId == '') {
+            alert("userID不可为空");
+            return;
+        }
+        if ($("#age").val()  == null || $("#age").val()  == '') {
+            alert("年龄不可为空");
+            return;
+        }
+        $.ajax({
+            url: "/updateUser",
+            data: data,
+            type: "POST",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            success: function (data) {
+                // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                if (data == null || data == '') {
+                    alert("系统错误")
+                } else {
+                    console.log(data)
+
+                    if (data.code == 200){
+                        alert("修改成功")
+                    }else {
+                        alert("修改失败")
+                    }
+                }
+            }
+        })
+    });
+
+    $("#queryUser").click(function () {
+        var data = "{'name': '" + $("#userName").val() + "','age':" + $("#age").val() + ",'id':'" + $("#userId").val() + "'}";
+
+        var userId = $("#userId").val();
+        if (userId == null || userId == '') {
+            alert("用户ID不可为空");
+            return;
+        }
+        if ( $("#userName").val() == null ||  $("#userName").val() == '') {
+            alert("用户名字不可为空");
+            return;
+        }
+        if ( $("#age").val() == null ||  $("#age").val() == '') {
+            alert("用户年龄不可为空");
+            return;
+        }
+        var age = $("#age").val();
+        if (age == null || age == '') {
+            var data = "{'name': '" + $("#userName").val() + "','id':'" + $("#userId").val() + "'}";
+        }
+
+        $.ajax({
+            url: "/queryUser",
+            data: data,
+            type: "POST",
+            dataType: "json",
+            contentType: 'application/json;charset=UTF-8',
+            success: function (data) {
+                // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                if (data == null || data == '') {
+                    alert("未查到数据")
+                } else {
+                    console.log(data)
+                    if (data.code == 200){
+                        $("#showArea").html("id:" + data.data.id
+                            + "<br> age:" + data.data.age
+                            + "<br> name:" + data.data.name);
+                    }else{
+                        alert("查找失败")
+                        console.log(data)
+                    }
+                }
+            }
+        })
+    });
+
+</script>
+
+
+</body>
+</html>
